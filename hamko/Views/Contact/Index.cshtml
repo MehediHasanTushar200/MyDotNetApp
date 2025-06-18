@@ -1,0 +1,43 @@
+﻿@model List<Contact>
+@{
+}
+
+<h2 class="text-center mb-5"> List of Contacts</h2>
+
+<table class="table">
+	<thead>
+        <tr>
+            <th>Contact No</th>
+            <th style="width: 28rem;">Name</th>
+            <th>Email</th>
+            <th style="width: 25rem;">Phone</th>
+            <th style="width: 25rem;">Project</th>
+            <th style="width: 25rem;">Subject</th>
+            <th style="width: 25rem;">Message</th>
+            <th style="width: 25rem;">Action</th>
+        </tr>
+	</thead>
+    <tbody>
+        @foreach (var contact in Model)
+        {
+            <tr>
+                <td>@contact.Id</td>
+                <td>@contact.Name</td>
+                <td>@contact.Email</td>
+                <td>@contact.Phone</td>
+                <td>@contact.Project</td>
+                <td>@contact.Subject</td>
+                <td>@contact.Message</td>
+
+                <td>
+                    @* <a href="Category/Details/@contact.Id" class="btn btn-sm btn-success">View</a> *@
+                    @* <a href="Category/Edit/@contact.Id" class="btn btn-sm btn-primary">Edit</a> *@
+                    <a href="Contact/Delete/@contact.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+

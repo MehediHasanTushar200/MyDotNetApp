@@ -1,0 +1,52 @@
+﻿@model List<Product>
+@{
+}
+
+<h2 class="text-center mb-5"> List of Products</h2>
+
+<div class="row mb-5">
+	<div class="col">
+		<a class="btn btn-primary" asp-controller="Products" asp-action="Create">Add New Product</a>
+	</div>
+	<div class="col">
+
+	</div>
+</div>
+
+<table class="table">
+	<thead>
+        <tr>
+			<th style="width: 5rem;">Product No</th>
+			<th style="width: 10rem;">Product Name</th>
+			<th style="width: 10rem;">Brand Name</th>
+            <th style="width: 10rem;">Category Name</th>
+            <th>Image</th>
+			<th style="width: 3rem;">Description</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+	</thead>
+	<tbody>
+		@foreach (var product in Model)
+		{
+			<tr>
+				<td>@product.Id</td>
+				<td>@product.Name</td>
+				<td>@product.Brand.Name</td>
+				<td>@product.Category.Name</td>
+				<td>
+					<img src="~/products/@product.ImageFileName" alt="Brand Image" width="100" />
+				</td>
+				<td>@string.Join(" ", @product.Description.Split(' ').Take(7))...</td>
+				<td>@product.Status</td>
+				<td>
+					<a href="Products/Details/@product.Id" class="btn btn-sm btn-success">View</a>
+					<a href="Products/Edit/@product.Id" class="btn btn-sm btn-primary">Edit</a>
+					<a href="Products/Delete/@product.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+

@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "hamko.Controllers.Api.ApiBatteryController",
+    "Method": "GetBatteries",
+    "RelativePath": "api/ApiBattery",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "hamko.Controllers.Api.ApiContactController",
+    "Method": "SubmitContact",
+    "RelativePath": "api/ApiContact/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "hamko.Models.Contact",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

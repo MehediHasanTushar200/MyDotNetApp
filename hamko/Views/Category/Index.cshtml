@@ -1,0 +1,48 @@
+﻿@model List<Category>
+@{
+}
+
+<h2 class="text-center mb-5"> List of Categories</h2>
+
+<div class="row mb-5">
+	<div class="col">
+		<a class="btn btn-primary" asp-controller="Category" asp-action="Create">Add New Category</a>
+	</div>
+	<div class="col">
+
+	</div>
+</div>
+
+<table class="table">
+	<thead>
+        <tr>
+            <th>Category No</th>
+            <th style="width: 10rem;">Name</th>
+            <th>Image</th>
+			<th style="width: 25rem;">Description</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+	</thead>
+	<tbody>
+		@foreach (var category in Model)
+		{
+			<tr>
+				<td>@category.Id</td>
+				<td>
+					<img src="~/categories/@category.ImageFileName" alt="Category Image" width="100" />
+				</td>
+				<td>@category.Name</td>
+				<td>@category.Description</td>
+				<td>@category.Status</td>
+				<td>
+					<a href="Category/Details/@category.Id" class="btn btn-sm btn-success">View</a>
+					<a href="Category/Edit/@category.Id" class="btn btn-sm btn-primary">Edit</a>
+					<a href="Category/Delete/@category.Id" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+

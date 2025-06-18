@@ -1,0 +1,138 @@
+﻿@model hamko.ViewModels.StockReportViewModel
+
+@{
+    ViewBag.Title = "Sales & Purchase Report";
+}
+
+<h2 class="mb-4">Product, Branch & Date-wise Sales and Purchase Report</h2>
+
+<form asp-action="Index" method="post" class="mb-4 no-print">
+    <div class="form-row">
+        <div class="col-md-3">
+            <label>Product</label>
+            <select asp-for="SelectedProductId" class="form-control select2"
+                    asp-items="Model.Products">
+                <option value="">-- All Products --</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Branch</label>
+            <select asp-for="SelectedBranchId" class="form-control select2"
+                    asp-items="Model.Branches">
+                <option value="">-- All Branches --</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>From Date</label>
+            <input asp-for="FromDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label>To Date</label>
+            <input asp-for="ToDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="button" onclick="printDiv('report-section')" class="btn btn-secondary ml-2">Print</button>
+        </div>
+    </div>
+</form>
+
+<div id="report-section">
+    @if ((Model.PurchaseResults?.Any() ?? false) || (Model.SalesResults?.Any() ?? false))
+    {
+        @* Purchase Table *@
+        @if (Model.PurchaseResults.Any())
+        {
+            <h4>Purchase Report</h4>
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-right">Quantity</th>
+                        <th class="text-right">Unit Price</th>
+                        <th class="text-right">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PurchaseResults)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td class="text-right">@item.Quantity.ToString("N2")</td>
+                            <td class="text-right">@item.Price.ToString("N2")</td>
+                            <td class="text-right">@item.TotalPrice.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p><em>No purchase data found for selected filters.</em></p>
+        }
+
+        <hr />
+
+        @* Sales Table *@
+        @if (Model.SalesResults.Any())
+        {
+            <h4>Sales Report</h4>
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-right">Quantity</th>
+                        <th class="text-right">Unit Price</th>
+                        <th class="text-right">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.SalesResults)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td class="text-right">@item.Quantity.ToString("N2")</td>
+                            <td class="text-right">@item.Price.ToString("N2")</td>
+                            <td class="text-right">@item.TotalPrice.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p><em>No sales data found for selected filters.</em></p>
+        }
+    }
+    else
+    {
+        <p>Please select filters and click Search to view the report.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({ width: '100%' });
+        });
+
+        function printDiv(divId) {
+            var printContents = document.getElementById(divId).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload();
+        }
+    </script>
+}
+
+<style>
+    @@media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
