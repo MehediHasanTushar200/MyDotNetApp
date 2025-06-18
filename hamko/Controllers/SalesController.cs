@@ -324,6 +324,40 @@ namespace hamko.Controllers
             return RedirectToAction("Index");
         }
 
+        // Product search for autocomplete
+        [HttpGet]
+        public JsonResult SearchProducts(string term)
+        {
+            var productIdsInStockIn = _context.StockIns
+                .Select(si => si.ProductId)
+                .Distinct()
+                .ToList();
+
+            var products = _context.Products
+                .Where(p => productIdsInStockIn.Contains(p.Id) && p.Name.Contains(term))
+                .Select(p => new { label = p.Name, value = p.Id })
+                .ToList();
+
+            return Json(products);
+        }
+
+        // Branch search for autocomplete
+        [HttpGet]
+        public JsonResult SearchBranches(string term)
+        {
+            var branchIdsInStockIn = _context.StockIns
+                .Select(si => si.BranchId)
+                .Distinct()
+                .ToList();
+
+            var branches = _context.Branches
+                .Where(b => branchIdsInStockIn.Contains(b.Id) && b.BranchName.Contains(term))
+                .Select(b => new { label = b.BranchName, value = b.Id })
+                .ToList();
+
+            return Json(branches);
+        }
+
 
 
     }

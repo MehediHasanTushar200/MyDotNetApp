@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "cKEg4ninMFY=",
+  "dgSpecHash": "aoM1gwZK9ok=",
   "success": true,
-  "projectFilePath": "D:\\Practice\\task-project\\hamko\\hamko.csproj",
+  "projectFilePath": "D:\\Practice\\MyDotNetApp\\hamko\\hamko.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ICT-2\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\ICT-2\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

@@ -109,7 +109,7 @@
                                 var item = Model.StockOuts[i];
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-danger remove-row" @(Model.StockOuts.Count == 1 ? "disabled" : "")>&times;</button>
+                                        <button type="button" class="btn btn-sm btn-danger remove-row" @(Model.StockOuts.Count == 0 ? "disabled" : "")>&times;</button>
                                     </td>
                                     <td>
                                         <select class="form-select select2 product-select" name="StockOuts[@i].ProductId" required>
@@ -248,65 +248,64 @@
 
             const table = document.getElementById('DetailsTable');
             const addRowBtn = document.getElementById('add-row');
+            const templateRow = table.rows[0].cloneNode(true); // original row clone
 
-            // Add new rows
-            addRowBtn.addEventListener('click', () => {
-                const count = parseInt(document.getElementById('row-count').value) || 1;
-                const existingRows = table.rows.length;
+        // Add new rows
+        addRowBtn.addEventListener('click', () => {
+            const count = parseInt(document.getElementById('row-count').value) || 1;
+            const existingRows = table.rows.length;
 
-                for (let i = 0; i < count; i++) {
-                    const newRow = table.rows[0].cloneNode(true);
-                    const newIndex = existingRows + i;
+            for (let i = 0; i < count; i++) {
+                const newRow = templateRow.cloneNode(true);
+                const newIndex = table.rows.length + i;
 
-                    // Destroy select2 before cloning to prevent duplication issues
-                    $(newRow).find('.select2').each(function () {
-                        if ($(this).hasClass("select2-hidden-accessible")) {
-                            $(this).select2('destroy');
-                        }
-                    });
-                    $(newRow).find('.select2-container').remove();
-
-                    // Update input/select names and reset values
-                    newRow.querySelectorAll('input, select').forEach(el => {
-                        if (el.name) {
-                            el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
-                        }
-                        if (el.tagName === 'SELECT') {
-                            el.selectedIndex = 0;
-                            el.value = '';
-                        } else {
-                            el.value = el.classList.contains('total') ? '0.00' : (el.classList.contains('qty') ? '0' : '');
-                        }
-                    });
-
-                    // Clear qty-error div text and hide
-                    const errorDiv = newRow.querySelector('.qty-error');
-                    if (errorDiv) {
-                        errorDiv.innerText = '';
-                        errorDiv.style.display = 'none';
+                // Destroy select2 before cloning
+                $(newRow).find('.select2').each(function () {
+                    if ($(this).hasClass("select2-hidden-accessible")) {
+                        $(this).select2('destroy');
                     }
+                });
+                $(newRow).find('.select2-container').remove();
 
-                    // Reset stock display to 0
-                    newRow.querySelector('.stock-available').textContent = '0';
+                // Update input/select names and reset values
+                newRow.querySelectorAll('input, select').forEach(el => {
+                    if (el.name) {
+                        el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
+                    }
+                    if (el.tagName === 'SELECT') {
+                        el.selectedIndex = 0;
+                        el.value = '';
+                    } else {
+                        el.value = el.classList.contains('total') ? '0.00' : (el.classList.contains('qty') ? '0' : '');
+                    }
+                });
 
-                    newRow.querySelector('.remove-row').disabled = false;
-
-                    table.appendChild(newRow);
+                // Clear qty-error div
+                const errorDiv = newRow.querySelector('.qty-error');
+                if (errorDiv) {
+                    errorDiv.innerText = '';
+                    errorDiv.style.display = 'none';
                 }
 
-                initializeSelect2();
-            });
+                newRow.querySelector('.stock-available').textContent = '0';
+                newRow.querySelector('.remove-row').disabled = false;
 
-            // Remove row
-            table.addEventListener('click', e => {
-                if (e.target.classList.contains('remove-row')) {
-                    const row = e.target.closest('tr');
-                    if (table.rows.length > 1) {
-                        row.remove();
-                        updateGrandTotal();
-                    }
-                }
-            });
+                table.appendChild(newRow);
+            }
+
+            initializeSelect2();
+        });
+
+        // Remove a single row when cross is clicked
+        table.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-row')) {
+                const row = e.target.closest('tr');
+                row.remove(); // remove that row only
+
+                updateGrandTotal(); // optional if you have total calculation
+            }
+        });
+
 
             // On product or branch change - update stock display
             // On product or branch change - update stock display

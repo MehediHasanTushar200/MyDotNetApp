@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Practice\\task-project\\hamko\\hamko.csproj": {}
+    "D:\\Practice\\MyDotNetApp\\hamko\\hamko.csproj": {}
   },
   "projects": {
-    "D:\\Practice\\task-project\\hamko\\hamko.csproj": {
+    "D:\\Practice\\MyDotNetApp\\hamko\\hamko.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Practice\\task-project\\hamko\\hamko.csproj",
+        "projectUniqueName": "D:\\Practice\\MyDotNetApp\\hamko\\hamko.csproj",
         "projectName": "hamko",
-        "projectPath": "D:\\Practice\\task-project\\hamko\\hamko.csproj",
+        "projectPath": "D:\\Practice\\MyDotNetApp\\hamko\\hamko.csproj",
         "packagesPath": "C:\\Users\\ICT-2\\.nuget\\packages\\",
-        "outputPath": "D:\\Practice\\task-project\\hamko\\obj\\",
+        "outputPath": "D:\\Practice\\MyDotNetApp\\hamko\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -10,7 +10,8 @@
     <title>New Sales Entry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
     <style>
         .qty-error {
             color: red;
@@ -60,21 +61,24 @@
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label">Customer</label>
-                    <select class="form-select select2" name="CustomerId" required>
-                        <option value="">Select</option>
-                        <!-- TODO: Replace with actual customers from ViewBag -->
+                    <select class="form-select" id="CustomerId" name="CustomerId" required>
+                        <option value="">-- Select Customer --</option>
                         <option value="1">Customer A</option>
                         <option value="2">Customer B</option>
+                        <option value="3">Customer C</option>
                     </select>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">User</label>
-                    <select class="form-select select2" name="UserId" required>
-                        <option value="">Select</option>
-                        <option value="1">User A</option>
-                        <option value="2">User B</option>
+                    <select class="form-select" id="UserId" name="UserId" required>
+                        <option value="">-- Select User --</option>
+                        <option value="1">User1</option>
+                        <option value="2">User2</option>
+                        <option value="3">User3</option>
                     </select>
                 </div>
+
                 <div class="col-md-4">
                     <label class="form-label">Status</label>
                     <select class="form-select" name="Status">
@@ -86,7 +90,7 @@
 
             <!-- Dynamic Details Table -->
             <div class="table-responsive mb-3">
-                <table class="table table-bordered text-center">
+                <table class="table table-bordered text-center" id="DetailsTable">
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
@@ -98,28 +102,18 @@
                             <th>Total</th>
                         </tr>
                     </thead>
-                    <tbody id="DetailsTable">
+                    <tbody >
                         <tr>
                             <td>
                                 <button type="button" class="btn btn-sm btn-danger remove-row" disabled>&times;</button>
                             </td>
                             <td>
-                                <select class="form-select select2 product-select" name="StockOuts[0].ProductId" required>
-                                    <option value="">Select</option>
-                                    @foreach (var product in (IEnumerable<dynamic>)ViewBag.Products)
-                                    {
-                                        <option value="@product.Id">@product.Name</option>
-                                    }
-                                </select>
+                                <input type="text" class="form-control product-input" autocomplete="off" />
+                                <input type="hidden" name="StockOuts[0].ProductId" class="product-id" />
                             </td>
                             <td>
-                                <select class="form-select select2 branch-select" name="StockOuts[0].BranchId" required>
-                                    <option value="">Select</option>
-                                    @foreach (var branch in (IEnumerable<dynamic>)ViewBag.Branches)
-                                    {
-                                        <option value="@branch.Id">@branch.BranchName</option>
-                                    }
-                                </select>
+                                <input type="text" class="form-control branch-input" autocomplete="off" />
+                                <input type="hidden" name="StockOuts[0].BranchId" class="branch-id" />
                             </td>
                             <td>
                                 <span class="stock-available">0</span>
@@ -174,25 +168,72 @@
         </form>
     </div>
 
-    <!-- Pass stock data to JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script>
         // ViewBag.StockData থেকে আসা stock quantity data (structure: [{ProductId:1, BranchId:2, AvailableQty: 100}, ...])
         const stockData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.StockData ?? new List<dynamic>()));
 
         $(document).ready(function () {
-            function initializeSelect2() {
-            $('.select2').select2({
-                placeholder: "Select an option",
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 1
-            });
+            function initAutocomplete(row) {
+                row.find(".product-input").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '@Url.Action("SearchProducts", "Sales")',
+                            data: { term: request.term },
+                            success: function (data) {
+                                response(data);
+                            }
+                        });
+                    },
+                    minLength: 2,
+                    select: function (event, ui) {
+                        $(this).val(ui.item.label);
+                        row.find(".product-id").val(ui.item.value);
+
+                        // After selecting product, update stock display if branch selected
+                        const branchId = row.find(".branch-id").val();
+                        updateStockDisplay(row, ui.item.value, branchId);
+
+                        return false;
+                    }
+                });
+
+                row.find(".branch-input").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '@Url.Action("SearchBranches", "Sales")',
+                            data: { term: request.term },
+                            success: function (data) {
+                                response(data);
+                            }
+                        });
+                    },
+                    minLength: 2,
+                    select: function (event, ui) {
+                        $(this).val(ui.item.label);
+                        row.find(".branch-id").val(ui.item.value);
+
+                        // After selecting branch, update stock display if product selected
+                        const productId = row.find(".product-id").val();
+                        updateStockDisplay(row, productId, ui.item.value);
+
+                        return false;
+                    }
+                });
             }
 
-            initializeSelect2();
+            function updateStockDisplay(row, productId, branchId) {
+                const stockSpan = row.find('.stock-available');
+                if (productId && branchId) {
+                    const stockEntry = stockData.find(s => s.ProductId == productId && s.BranchId == branchId);
+                    const availableQty = stockEntry ? stockEntry.AvailableQty : 0;
+                    stockSpan.text(availableQty);
+                } else {
+                    stockSpan.text('0');
+                }
+            }
 
             flatpickr("#Date", {
                 dateFormat: "Y-m-d",
@@ -211,43 +252,26 @@
                     const newRow = table.rows[0].cloneNode(true);
                     const newIndex = existingRows + i;
 
-                    // Destroy select2 before cloning to prevent duplication issues
-                    $(newRow).find('.select2').each(function () {
-                        if ($(this).hasClass("select2-hidden-accessible")) {
-                            $(this).select2('destroy');
-                        }
-                    });
-                    $(newRow).find('.select2-container').remove();
+                    // Clear values on new row
+                    $(newRow).find("input[type='text']").val("");
+                    $(newRow).find("input[type='hidden']").val("");
+                    $(newRow).find("input[type='number']").val("0");
+                    $(newRow).find(".stock-available").text("0");
 
-                    // Update input/select names and reset values
+                    newRow.querySelector('.remove-row').disabled = false;
+
+                    // Update input/select names (if any)
                     newRow.querySelectorAll('input, select').forEach(el => {
                         if (el.name) {
                             el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
                         }
-                        if (el.tagName === 'SELECT') {
-                            el.selectedIndex = 0;
-                            el.value = '';
-                        } else {
-                            el.value = el.classList.contains('total') ? '0.00' : (el.classList.contains('qty') ? '0' : '');
-                        }
                     });
 
-                    // Clear qty-error div text and hide
-                    const errorDiv = newRow.querySelector('.qty-error');
-                    if (errorDiv) {
-                        errorDiv.innerText = '';
-                        errorDiv.style.display = 'none';
-                    }
-
-                    // Reset stock display to 0
-                    newRow.querySelector('.stock-available').textContent = '0';
-
-                    newRow.querySelector('.remove-row').disabled = false;
-
                     table.appendChild(newRow);
-                }
 
-                initializeSelect2();
+                    // Initialize autocomplete on the newly added row
+                    initAutocomplete($(newRow));
+                }
             });
 
             // Remove row
@@ -261,51 +285,9 @@
                 }
             });
 
-            // On product or branch change - update stock display
-            $('#DetailsTable').on('change', 'select.product-select, select.branch-select', function () {
-                const row = $(this).closest('tr');
-                const productId = row.find('select.product-select').val();
-                const branchId = row.find('select.branch-select').val();
-                const stockSpan = row.find('.stock-available');
-
-                if (productId && branchId) {
-                    const stockEntry = stockData.find(s => s.ProductId == productId && s.BranchId == branchId);
-                    const availableQty = stockEntry ? stockEntry.AvailableQty : 0;
-                    stockSpan.text(availableQty);
-                } else {
-                    stockSpan.text('0');
-                }
-            });
-
-            // Calculate totals and validate quantity live
+            // On qty or price input, calculate total and grand total
             table.addEventListener('input', e => {
                 const el = e.target;
-
-                if (el.classList.contains('qty')) {
-                    const row = el.closest('tr');
-                    const qtyInput = row.querySelector('.qty');
-                    const errorDiv = row.querySelector('.qty-error');
-
-                    const qty = parseFloat(qtyInput.value) || 0;
-                    const productId = row.querySelector('select.product-select').value;
-                    const branchId = row.querySelector('select.branch-select').value;
-
-                    if (productId && branchId) {
-                        const stockEntry = stockData.find(s => s.ProductId == productId && s.BranchId == branchId);
-                        const availableQty = stockEntry ? stockEntry.AvailableQty : 0;
-
-                        if (qty > availableQty) {
-                            errorDiv.innerText = "Quantity must be less than or equal to available stock!";
-                            errorDiv.style.display = 'block';
-                        } else {
-                            errorDiv.innerText = '';
-                            errorDiv.style.display = 'none';
-                        }
-                    } else {
-                        errorDiv.innerText = '';
-                        errorDiv.style.display = 'none';
-                    }
-                }
 
                 if (el.classList.contains('qty') || el.classList.contains('price')) {
                     const row = el.closest('tr');
@@ -324,7 +306,12 @@
                 document.getElementById('grand-total').innerText = sum.toFixed(2);
             }
 
-            // Disable submit button to prevent multiple submits
+            // Initialize autocomplete on existing rows at page load
+            $("#DetailsTable tbody tr").each(function () {
+                initAutocomplete($(this));
+            });
+
+            // Optional: Disable submit button to prevent multiple submits
             window.disableSubmit = function (form) {
                 const btn = form.querySelector("button[type='submit']");
                 btn.disabled = true;
@@ -332,5 +319,6 @@
             };
         });
     </script>
+
 </body>
 </html>
