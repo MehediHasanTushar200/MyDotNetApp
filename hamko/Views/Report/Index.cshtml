@@ -38,9 +38,45 @@
 </form>
 
 <div id="report-section">
+    @if (!string.IsNullOrEmpty(Model.SelectedProductId?.ToString()) ||
+    !string.IsNullOrEmpty(Model.SelectedBranchId?.ToString()) ||
+    Model.FromDate != null || Model.ToDate != null)
+    {
+        <div class="mb-3 no-print">
+            @if (Model.SelectedProductId.HasValue)
+            {
+                var selectedProduct = Model.Products.FirstOrDefault(p => p.Value == Model.SelectedProductId.ToString());
+                if (selectedProduct != null)
+                {
+                    <p><strong>Product:</strong> @selectedProduct.Text</p>
+                }
+            }
+
+            @if (Model.SelectedBranchId.HasValue)
+            {
+                var selectedBranch = Model.Branches.FirstOrDefault(b => b.Value == Model.SelectedBranchId.ToString());
+                if (selectedBranch != null)
+                {
+                    <p><strong>Branch:</strong> @selectedBranch.Text</p>
+                }
+            }
+
+            @if (Model.FromDate.HasValue)
+            {
+                <p><strong>From Date:</strong> @Model.FromDate.Value.ToString("yyyy-MM-dd")</p>
+            }
+
+            @if (Model.ToDate.HasValue)
+            {
+                <p><strong>To Date:</strong> @Model.ToDate.Value.ToString("yyyy-MM-dd")</p>
+            }
+        </div>
+    }
+
+    @* Report Table Section *@
     @if ((Model.PurchaseResults?.Any() ?? false) || (Model.SalesResults?.Any() ?? false))
     {
-        @* Purchase Table *@
+        @* Purchase Report *@
         @if (Model.PurchaseResults.Any())
         {
             <h4>Purchase Report</h4>
@@ -48,6 +84,10 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Product</th>
+                        @if (Model.SelectedBranchId == null)
+                        {
+                            <th>Branch</th>
+                        }
                         <th class="text-right">Quantity</th>
                         <th class="text-right">Unit Price</th>
                         <th class="text-right">Total Price</th>
@@ -58,6 +98,10 @@
                     {
                         <tr>
                             <td>@item.ProductName</td>
+                            @if (Model.SelectedBranchId == null)
+                            {
+                                <td>@item.BranchName</td>
+                            }
                             <td class="text-right">@item.Quantity.ToString("N2")</td>
                             <td class="text-right">@item.Price.ToString("N2")</td>
                             <td class="text-right">@item.TotalPrice.ToString("N2")</td>
@@ -73,7 +117,7 @@
 
         <hr />
 
-        @* Sales Table *@
+        @* Sales Report *@
         @if (Model.SalesResults.Any())
         {
             <h4>Sales Report</h4>
@@ -81,6 +125,10 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Product</th>
+                        @if (Model.SelectedBranchId == null)
+                        {
+                            <th>Branch</th>
+                        }
                         <th class="text-right">Quantity</th>
                         <th class="text-right">Unit Price</th>
                         <th class="text-right">Total Price</th>
@@ -91,6 +139,10 @@
                     {
                         <tr>
                             <td>@item.ProductName</td>
+                            @if (Model.SelectedBranchId == null)
+                            {
+                                <td>@item.BranchName</td>
+                            }
                             <td class="text-right">@item.Quantity.ToString("N2")</td>
                             <td class="text-right">@item.Price.ToString("N2")</td>
                             <td class="text-right">@item.TotalPrice.ToString("N2")</td>
@@ -135,4 +187,3 @@
         }
     }
 </style>
-

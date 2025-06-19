@@ -12,6 +12,8 @@ namespace hamko.ViewModels
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
 
+
+
         public List<SelectListItem> Products { get; set; }
         public List<SelectListItem> Branches { get; set; }
 

@@ -358,6 +358,41 @@ namespace hamko.Controllers
             return Json(branches);
         }
 
+        /////////////
+        //edit
+        /////////////
+        [HttpGet]
+        public JsonResult SearchCustomers(string term)
+        {
+            var customerIdsInSales = _context.Sales
+                .Select(s => s.CustomerId)
+                .Distinct()
+                .ToList();
+
+            var customers = _context.Customers
+                .Where(c => customerIdsInSales.Contains(c.Id) && c.Name.Contains(term))
+                .Select(c => new { label = c.Name, value = c.Id })
+                .ToList();
+
+            return Json(customers);
+        }
+
+        [HttpGet]
+        public JsonResult SearchUsers(string term)
+        {
+            var userIdsInSales = _context.Sales
+                .Select(s => s.UserId)
+                .Distinct()
+                .ToList();
+
+            var users = _context.User
+                .Where(u => userIdsInSales.Contains(u.Id) && u.UserName.Contains(term))
+                .Select(u => new { label = u.UserName, value = u.Id })
+                .ToList();
+
+            return Json(users);
+        }
+
 
 
     }
