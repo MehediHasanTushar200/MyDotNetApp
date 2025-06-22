@@ -7765,6 +7765,10 @@
       "PackagePath": "staticwebassets\\products\\20250126135255028.jpeg"
     },
     {
+      "Id": "D:\\Practice\\MyDotNetApp\\hamko\\wwwroot\\products\\20250622130339036.png",
+      "PackagePath": "staticwebassets\\products\\20250622130339036.png"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.hamko.props",
       "PackagePath": "build\\hamko.props"
     },

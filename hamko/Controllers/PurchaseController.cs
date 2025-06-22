@@ -177,6 +177,27 @@ namespace hamko.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Example Controller actions for autocomplete
+
+        [HttpGet]
+        public JsonResult SearchProducts(string term)
+        {
+            var products = _context.Products
+                .Where(p => p.Name.Contains(term))
+                .Select(p => new { label = p.Name, value = p.Id })
+                .ToList();
+            return Json(products);
+        }
+
+        [HttpGet]
+        public JsonResult SearchBranches(string term)
+        {
+            var branches = _context.Branches
+                .Where(b => b.BranchName.Contains(term))
+                .Select(b => new { label = b.BranchName, value = b.Id })
+                .ToList();
+            return Json(branches);
+        }
 
 
     }

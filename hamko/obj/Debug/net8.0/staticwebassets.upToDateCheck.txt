@@ -83,6 +83,7 @@ wwwroot\products\20250126130109088.jpeg
 wwwroot\products\20250126134914542.jpeg
 wwwroot\products\20250126135117372.png
 wwwroot\products\20250126135255028.jpeg
+wwwroot\products\20250622130339036.png
 wwwroot\Theme\css\sb-admin-2.css
 wwwroot\Theme\css\sb-admin-2.min.css
 wwwroot\Theme\img\undraw_posting_photo.svg

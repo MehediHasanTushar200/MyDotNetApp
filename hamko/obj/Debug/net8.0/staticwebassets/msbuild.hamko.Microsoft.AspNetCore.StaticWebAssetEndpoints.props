@@ -1032,6 +1032,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-TFODumcOlDZttgdSSEP0RJ6ErFX0mOs9yMoatCUzLTw="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"3100"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022TFODumcOlDZttgdSSEP0RJ6ErFX0mOs9yMoatCUzLTw=\u0022"},{"Name":"Last-Modified","Value":"Sun, 26 Jan 2025 07:52:55 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/hamko/products/20250622130339036.6no6otid5h.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\products\20250622130339036.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"6no6otid5h"},{"Name":"integrity","Value":"sha256-vjGeVYyUGyLifLbwd9Ly/MYMmFLxdwmWeTL09nU6d1E="},{"Name":"label","Value":"_content/hamko/products/20250622130339036.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2463"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022vjGeVYyUGyLifLbwd9Ly/MYMmFLxdwmWeTL09nU6d1E=\u0022"},{"Name":"Last-Modified","Value":"Sun, 22 Jun 2025 07:03:39 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/hamko/products/20250622130339036.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\products\20250622130339036.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-vjGeVYyUGyLifLbwd9Ly/MYMmFLxdwmWeTL09nU6d1E="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2463"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022vjGeVYyUGyLifLbwd9Ly/MYMmFLxdwmWeTL09nU6d1E=\u0022"},{"Name":"Last-Modified","Value":"Sun, 22 Jun 2025 07:03:39 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/hamko/Theme/css/sb-admin-2.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Theme\css\sb-admin-2.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>

@@ -243,36 +243,35 @@
             const table = document.getElementById('DetailsTable');
             const addRowBtn = document.getElementById('add-row');
 
-            // Add new rows
-            addRowBtn.addEventListener('click', () => {
-                const count = parseInt(document.getElementById('row-count').value) || 1;
-                const existingRows = table.rows.length;
+                  addRowBtn.addEventListener('click', () => {
+            const count = parseInt(document.getElementById('row-count').value) || 1;
+            const tbody = table.querySelector("tbody"); // ✅ only tbody rows count
+            const existingRows = tbody.querySelectorAll("tr").length;
 
-                for (let i = 0; i < count; i++) {
-                    const newRow = table.rows[0].cloneNode(true);
-                    const newIndex = existingRows + i;
+            for (let i = 0; i < count; i++) {
+                const newRow = table.rows[1].cloneNode(true); // clone first data row (not header)
+                const newIndex = existingRows + i;
 
-                    // Clear values on new row
-                    $(newRow).find("input[type='text']").val("");
-                    $(newRow).find("input[type='hidden']").val("");
-                    $(newRow).find("input[type='number']").val("0");
-                    $(newRow).find(".stock-available").text("0");
+                // Reset input values
+                $(newRow).find("input[type='text']").val("");
+                $(newRow).find("input[type='hidden']").val("");
+                $(newRow).find("input[type='number']").val("0");
+                $(newRow).find(".stock-available").text("0");
 
-                    newRow.querySelector('.remove-row').disabled = false;
+                newRow.querySelector('.remove-row').disabled = false;
 
-                    // Update input/select names (if any)
-                    newRow.querySelectorAll('input, select').forEach(el => {
-                        if (el.name) {
-                            el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
-                        }
-                    });
+                // Update input names
+                newRow.querySelectorAll('input, select').forEach(el => {
+                    if (el.name) {
+                        el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
+                    }
+                });
 
-                    table.appendChild(newRow);
+                tbody.appendChild(newRow); // ✅ add to tbody only
+                initAutocomplete($(newRow));
+            }
+        });
 
-                    // Initialize autocomplete on the newly added row
-                    initAutocomplete($(newRow));
-                }
-            });
 
             // Remove row
             table.addEventListener('click', e => {

@@ -9,8 +9,7 @@
     <meta charset="UTF-8" />
     <title>Edit Sales Entry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
     <style>
         .qty-error {
             color: red;
@@ -35,7 +34,6 @@
 
             <h3 class="mb-4">Edit Sales Entry</h3>
 
-            <!-- Invoice, Reference, Date -->
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label">Invoice No</label>
@@ -47,34 +45,28 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Date</label>
-                    <input type="text"
-                           class="form-control"
-                           id="Date"
-                           name="Date"
-                           required
-                           value="@Model.Date.ToString("yyyy-MM-dd")" />
+                    <input type="date" class="form-control" name="Date" required value="@Model.Date.ToString("yyyy-MM-dd")" />
                 </div>
             </div>
 
-            <!-- Customer, User, Status -->
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label">Customer</label>
-                    <select class="form-select select2" name="CustomerId" required>
+                    <select class="form-select" name="CustomerId" required>
                         <option value="">Select</option>
                         @foreach (var customer in (IEnumerable<dynamic>)ViewBag.Customers)
                         {
-                            <option value="@customer.Id" selected="@(customer.Id == Model.CustomerId ? "selected" : null)"> @customer.Name </option>
+                            <option value="@customer.Id" selected="@(customer.Id == Model.CustomerId ? "selected" : null)">@customer.Name</option>
                         }
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">User</label>
-                    <select class="form-select select2" name="UserId" required>
+                    <select class="form-select" name="UserId" required>
                         <option value="">Select</option>
                         @foreach (var user in (IEnumerable<dynamic>)ViewBag.Users)
                         {
-                            <option value="@user.Id" selected="@(user.Id == Model.UserId ? "selected" : null)"> @user.UserName </option>
+                            <option value="@user.Id" selected="@(user.Id == Model.UserId ? "selected" : null)">@user.UserName</option>
                         }
                     </select>
                 </div>
@@ -87,129 +79,37 @@
                 </div>
             </div>
 
-            <!-- Dynamic Details Table -->
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered text-center">
-                    <thead class="table-dark">
+            <table class="table table-bordered text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Branch</th>
+                        <th>Stock</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="DetailsTable">
+                    @for (int i = 0; i < Model.StockOuts.Count; i++)
+                    {
                         <tr>
-                            <th>#</th>
-                            <th>Product</th>
-                            <th>Branch</th>
-                            <th>Stock</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Total</th>
+                            <td><button type="button" class="btn btn-sm btn-danger remove-row">&times;</button></td>
+                            <td><input type="text" name="StockOuts[@i].ProductName" class="form-control product-input" value="@Model.StockOuts[i].ProductName" /></td>
+                            <td><input type="text" name="StockOuts[@i].BranchName" class="form-control branch-input" value="@Model.StockOuts[i].BranchName" /></td>
+                            <td><span class="stock-available">0</span></td>
+                            <td><input type="number" name="StockOuts[@i].Quantity" class="form-control qty" value="@Model.StockOuts[i].Quantity" /><div class="qty-error"></div></td>
+                            <td><input type="number" name="StockOuts[@i].Price" class="form-control price" value="@Model.StockOuts[i].Price" /></td>
+                            <td><input type="number" name="StockOuts[@i].TotalPrice" class="form-control total" value="@Model.StockOuts[i].TotalPrice.ToString("F2")" readonly /></td>
                         </tr>
-                    </thead>
-                    <tbody id="DetailsTable">
-                        @if (Model.StockOuts != null && Model.StockOuts.Any())
-                        {
-                            for (int i = 0; i < Model.StockOuts.Count; i++)
-                            {
-                                var item = Model.StockOuts[i];
-                                <tr>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger remove-row" @(Model.StockOuts.Count == 0 ? "disabled" : "")>&times;</button>
-                                    </td>
-                                    <td>
-                                        <select class="form-select select2 product-select" name="StockOuts[@i].ProductId" required>
-                                            <option value="">Select</option>
-                                            @foreach (var p in (IEnumerable<dynamic>)ViewBag.Products)
-                                            {
-                                                <option value="@p.Id" selected="@(p.Id == Model.StockOuts[i].ProductId ? "selected" : null)">@p.Name</option>
-                                            }
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="form-select select2 branch-select" name="StockOuts[@i].BranchId" required>
-                                            <option value="">Select</option>
-                                            @foreach (var b in (IEnumerable<dynamic>)ViewBag.Branches)
-                                            {
-                                                <option value="@b.Id" selected="@(b.Id == Model.StockOuts[i].BranchId ? "selected" : null)">@b.BranchName</option>
-                                            }
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <span class="stock-available">0</span>
-                                    </td>
-                                    <td>
-                                        <input type="number"
-                                               name="StockOuts[@i].Quantity"
-                                               class="form-control qty"
-                                               step="0.01"
-                                               value="@item.Quantity" />
-                                        <div class="qty-error"></div>
-                                    </td>
-                                    <td>
-                                        <input type="number"
-                                               name="StockOuts[@i].Price"
-                                               class="form-control price"
-                                               step="0.01"
-                                               value="@item.Price" />
-                                    </td>
-                                    <td>
-                                        <input type="number"
-                                               name="StockOuts[@i].TotalPrice"
-                                               class="form-control total"
-                                               value="@(item.TotalPrice.ToString("F2"))"
-                                               readonly />
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger remove-row" disabled>&times;</button>
-                                </td>
-                                <td>
-                                    <select class="form-select select2 product-select" name="StockOuts[0].ProductId" required>
-                                        <option value="">Select</option>
-                                        @foreach (var product in (IEnumerable<dynamic>)ViewBag.Products)
-                                        {
-                                            <option value="@product.Id">@product.Name</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-select select2 branch-select" name="StockOuts[0].BranchId" required>
-                                        <option value="">Select</option>
-                                        @foreach (var branch in (IEnumerable<dynamic>)ViewBag.Branches)
-                                        {
-                                            <option value="@branch.Id">@branch.BranchName</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td><span class="stock-available">0</span></td>
-                                <td>
-                                    <input type="number" name="StockOuts[0].Quantity" class="form-control qty" step="0.01" value="0" />
-                                    <div class="qty-error"></div>
-                                </td>
-                                <td>
-                                    <input type="number" name="StockOuts[0].Price" class="form-control price" step="0.01" value="0" />
-                                </td>
-                                <td>
-                                    <input type="number" name="StockOuts[0].TotalPrice" class="form-control total" value="0.00" readonly />
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
 
-            <!-- Add Row Controls -->
             <div class="mb-3 d-flex align-items-center">
-                <input type="number"
-                       id="row-count"
-                       class="form-control me-2"
-                       value="1"
-                       min="1"
-                       max="10"
-                       style="width: 100px;" />
-                <button type="button" class="btn btn-secondary" id="add-row">
-                    Add Row(s)
-                </button>
+                <input type="number" id="row-count" class="form-control me-2" value="1" min="1" max="10" style="width: 100px;" />
+                <button type="button" class="btn btn-secondary" id="add-row">Add Row(s)</button>
             </div>
 
             <div class="text-end mb-3">
@@ -221,160 +121,67 @@
         </form>
     </div>
 
-    <!-- Pass stock data to JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script>
-        // ViewBag.StockData থেকে আসা stock quantity data (structure: [{ProductId:1, BranchId:2, AvailableQty: 100}, ...])
         const stockData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.StockData ?? new List<dynamic>()));
+        const productList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Products ?? new List<dynamic>()));
+        const branchList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Branches ?? new List<dynamic>()));
 
-        $(document).ready(function () {
-            function initializeSelect2() {
-                $('.select2').select2({
-                    placeholder: "Select an option",
-                    allowClear: true,
-                    width: '100%',
-                    minimumInputLength: 1
+        $(function () {
+            function bindAutocomplete(row) {
+                row.find(".product-input").autocomplete({
+                    source: productList.map(p => p.Name),
+                    minLength: 1
+                });
+                row.find(".branch-input").autocomplete({
+                    source: branchList.map(b => b.BranchName),
+                    minLength: 1
                 });
             }
 
-            initializeSelect2();
-
-            flatpickr("#Date", {
-                dateFormat: "Y-m-d",
-                defaultDate: new Date()
+            $("#DetailsTable tr").each(function () {
+                bindAutocomplete($(this));
             });
 
-            const table = document.getElementById('DetailsTable');
-            const addRowBtn = document.getElementById('add-row');
-            const templateRow = table.rows[0].cloneNode(true); // original row clone
-
-        // Add new rows
-        addRowBtn.addEventListener('click', () => {
-            const count = parseInt(document.getElementById('row-count').value) || 1;
-            const existingRows = table.rows.length;
-
-            for (let i = 0; i < count; i++) {
-                const newRow = templateRow.cloneNode(true);
-                const newIndex = table.rows.length + i;
-
-                // Destroy select2 before cloning
-                $(newRow).find('.select2').each(function () {
-                    if ($(this).hasClass("select2-hidden-accessible")) {
-                        $(this).select2('destroy');
-                    }
-                });
-                $(newRow).find('.select2-container').remove();
-
-                // Update input/select names and reset values
-                newRow.querySelectorAll('input, select').forEach(el => {
-                    if (el.name) {
-                        el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
-                    }
-                    if (el.tagName === 'SELECT') {
-                        el.selectedIndex = 0;
-                        el.value = '';
-                    } else {
-                        el.value = el.classList.contains('total') ? '0.00' : (el.classList.contains('qty') ? '0' : '');
-                    }
-                });
-
-                // Clear qty-error div
-                const errorDiv = newRow.querySelector('.qty-error');
-                if (errorDiv) {
-                    errorDiv.innerText = '';
-                    errorDiv.style.display = 'none';
-                }
-
-                newRow.querySelector('.stock-available').textContent = '0';
-                newRow.querySelector('.remove-row').disabled = false;
-
-                table.appendChild(newRow);
-            }
-
-            initializeSelect2();
-        });
-
-        // Remove a single row when cross is clicked
-        table.addEventListener('click', e => {
-            if (e.target.classList.contains('remove-row')) {
-                const row = e.target.closest('tr');
-                row.remove(); // remove that row only
-
-                updateGrandTotal(); // optional if you have total calculation
-            }
-        });
-
-
-            // On product or branch change - update stock display
-            // On product or branch change - update stock display
-            $('#DetailsTable').on('change', 'select.product-select, select.branch-select', function () {
-                const row = $(this).closest('tr');
-                const productId = row.find('select.product-select').val();
-                const branchId = row.find('select.branch-select').val();
-                const stockSpan = row.find('.stock-available');
-
-                if (productId && branchId) {
-                    const stockEntry = stockData.find(s => s.ProductId == productId && s.BranchId == branchId);
-                    const availableQty = stockEntry ? stockEntry.AvailableQty : 0;
-                    stockSpan.text(availableQty);
-                } else {
-                    stockSpan.text('0');
+            $("#add-row").click(function () {
+                const rowCount = parseInt($("#row-count").val()) || 1;
+                for (let i = 0; i < rowCount; i++) {
+                    const index = $("#DetailsTable tr").length;
+                    const row = $("<tr>")
+                        .append(`<td><button type='button' class='btn btn-sm btn-danger remove-row'>&times;</button></td>`)
+                        .append(`<td><input type='text' name='StockOuts[${index}].ProductName' class='form-control product-input' /></td>`)
+                        .append(`<td><input type='text' name='StockOuts[${index}].BranchName' class='form-control branch-input' /></td>`)
+                        .append(`<td><span class='stock-available'>0</span></td>`)
+                        .append(`<td><input type='number' name='StockOuts[${index}].Quantity' class='form-control qty' value='0' /><div class='qty-error'></div></td>`)
+                        .append(`<td><input type='number' name='StockOuts[${index}].Price' class='form-control price' value='0' /></td>`)
+                        .append(`<td><input type='number' name='StockOuts[${index}].TotalPrice' class='form-control total' value='0.00' readonly /></td>`);
+                    $("#DetailsTable").append(row);
+                    bindAutocomplete(row);
                 }
             });
 
-            // Calculate totals and validate quantity live
-            table.addEventListener('input', e => {
-                const el = e.target;
+            $("#DetailsTable").on("click", ".remove-row", function () {
+                $(this).closest("tr").remove();
+                updateGrandTotal();
+            });
 
-                if (el.classList.contains('qty')) {
-                    const row = el.closest('tr');
-                    const qtyInput = row.querySelector('.qty');
-                    const errorDiv = row.querySelector('.qty-error');
-
-                    const qty = parseFloat(qtyInput.value) || 0;
-                    const productId = row.querySelector('select.product-select').value;
-                    const branchId = row.querySelector('select.branch-select').value;
-
-                    if (productId && branchId) {
-                        const stockEntry = stockData.find(s => s.ProductId == productId && s.BranchId == branchId);
-                        const availableQty = stockEntry ? stockEntry.AvailableQty : 0;
-
-                        if (qty > availableQty) {
-                            errorDiv.innerText = "Quantity must be less than or equal to available stock!";
-                            errorDiv.style.display = 'block';
-                        } else {
-                            errorDiv.innerText = '';
-                            errorDiv.style.display = 'none';
-                        }
-                    } else {
-                        errorDiv.innerText = '';
-                        errorDiv.style.display = 'none';
-                    }
-                }
-
-                if (el.classList.contains('qty') || el.classList.contains('price')) {
-                    const row = el.closest('tr');
-                    const qty = parseFloat(row.querySelector('.qty').value) || 0;
-                    const price = parseFloat(row.querySelector('.price').value) || 0;
-                    row.querySelector('.total').value = (qty * price).toFixed(2);
-                    updateGrandTotal();
-                }
+            $("#DetailsTable").on("input", ".qty, .price", function () {
+                const row = $(this).closest("tr");
+                const qty = parseFloat(row.find(".qty").val()) || 0;
+                const price = parseFloat(row.find(".price").val()) || 0;
+                row.find(".total").val((qty * price).toFixed(2));
+                updateGrandTotal();
             });
 
             function updateGrandTotal() {
-                let sum = 0;
-                document.querySelectorAll('.total').forEach(el => {
-                    sum += parseFloat(el.value) || 0;
+                let total = 0;
+                $(".total").each(function () {
+                    total += parseFloat($(this).val()) || 0;
                 });
-                document.getElementById('grand-total').innerText = sum.toFixed(2);
+                $("#grand-total").text(total.toFixed(2));
             }
 
-            // Update grand total on page load for existing rows
-            updateGrandTotal();
-
-            // Disable submit button to prevent multiple submits
             window.disableSubmit = function (form) {
                 const btn = form.querySelector("button[type='submit']");
                 btn.disabled = true;

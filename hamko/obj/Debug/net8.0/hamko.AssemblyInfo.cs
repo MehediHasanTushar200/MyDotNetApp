@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("hamko")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d755a025f9ca8d88dbdbbe8f082852e526f7b0f6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+970dbe42550abff84f8e2e0507b993693b3af9a1")]
 [assembly: System.Reflection.AssemblyProductAttribute("hamko")]
 [assembly: System.Reflection.AssemblyTitleAttribute("hamko")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
