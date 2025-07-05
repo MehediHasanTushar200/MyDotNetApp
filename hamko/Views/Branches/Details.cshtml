@@ -1,0 +1,24 @@
+﻿@model Branch
+@{
+}
+
+<h2>Branch Details</h2>
+
+<div class="card" style="width: 50rem;">
+    <div class="card-body">
+        <h5 class="card-title">Branch Information</h5>
+
+        <!-- Image Section: Right side of the page -->
+        <div class="float-end">
+            <img src="@Url.Content("~/branches/" + Model.ImageFileName)" alt="Branch Image" width="150" />
+        </div>
+
+        <!-- Course Information -->
+        <p class="card-text"><strong>ID:</strong> @Model.Id</p>
+        <p class="card-text"><strong> Branch Name:</strong> @Model.BranchName</p>
+        <p class="card-text"><strong>Branch Description:</strong> @Model.Description</p>
+        <p class="card-text"><strong>Branch Status:</strong> @Model.Status</p>
+    </div>
+</div>
+
+<a href="@Url.Action("Index", "Branches")" class="btn btn-success mt-3">Back to List</a>

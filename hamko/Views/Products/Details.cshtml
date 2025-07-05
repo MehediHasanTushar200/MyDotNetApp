@@ -1,0 +1,23 @@
+﻿@model Brand
+
+<h2>Brand Details</h2>
+
+<div class="card" style="width: 50rem;">
+    <div class="card-body">
+        <h5 class="card-title">Brand Information</h5>
+
+        <!-- Image Section: Right side of the page -->
+        <div class="float-end">
+            <img src="@Url.Content("~/brands/" + Model.ImageFileName)" alt="Brand Image" width="150" />
+        </div>
+
+
+        <!-- Brand Information -->
+        <p class="card-text"><strong>ID:</strong> @Model.Id</p>
+        <p class="card-text"><strong>Name:</strong> @Model.Name</p>
+        <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+        <p class="card-text"><strong>Status:</strong> @Model.Status</p>
+    </div>
+</div>
+
+<a href="@Url.Action("Index", "Brands")" class="btn btn-success mt-3">Back to List</a>

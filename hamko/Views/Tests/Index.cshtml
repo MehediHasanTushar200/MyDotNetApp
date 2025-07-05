@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Test>
+
+<h2>Test List</h2>
+<a asp-action="Create" class="btn btn-success">Create New</a>
+<table class="table">
+    <thead>
+        <tr><th>Name</th><th>Score</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Score</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,229 @@
+﻿@model hamko.Models.Sales
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Sales Entry</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
+    <style>
+        .qty-error {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="container py-4">
+        <form method="post" asp-controller="Sales" asp-action="Edit" onsubmit="disableSubmit(this)">
+            @Html.AntiForgeryToken()
+            <h3 class="mb-4">Edit Sales Entry</h3>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Invoice No</label>
+                    <input type="text" class="form-control" name="InvoiceNo" value="@Model.InvoiceNo" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Reference No</label>
+                    <input type="text" class="form-control" name="RefNo" value="@Model.RefNo" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Date</label>
+                    <input type="text" class="form-control" id="Date" name="Date" required value="@Model.Date.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Customer</label>
+                    <select class="form-select" name="CustomerId" required>
+                        <option value="">Select</option>
+                        @foreach (var customer in (IEnumerable<dynamic>)ViewBag.Customers)
+                        {
+                            <option value="@customer.Id" selected="@(customer.Id == Model.CustomerId ? "selected" : null)">@customer.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">User</label>
+                    <select class="form-select" name="UserId" required>
+                        <option value="">Select</option>
+                        @foreach (var user in (IEnumerable<dynamic>)ViewBag.Users)
+                        {
+                            <option value="@user.Id" selected="@(user.Id == Model.UserId ? "selected" : null)">@user.UserName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="Status">
+                        <option value="Active" selected="@(Model.Status == "Active" ? "selected" : null)">Active</option>
+                        <option value="Inactive" selected="@(Model.Status == "Inactive" ? "selected" : null)">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Branch</th>
+                  
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="DetailsTable">
+                        @if (Model.StockOuts != null && Model.StockOuts.Any())
+                        {
+                            for (int i = 0; i < Model.StockOuts.Count; i++)
+                            {
+                                var item = Model.StockOuts[i];
+                                var productName = ((IEnumerable<dynamic>)ViewBag.Products).FirstOrDefault(p => p.Id == item.ProductId)?.Name;
+                                var branchName = ((IEnumerable<dynamic>)ViewBag.Branches).FirstOrDefault(b => b.Id == item.BranchId)?.BranchName;
+                                <tr>
+                                    <td><button type="button" class="btn btn-sm btn-danger remove-row">&times;</button></td>
+                                    <td>
+                                        <input type="hidden" name="StockOuts[@i].Id" value="@item.Id" />
+                                        <input type="hidden" name="StockOuts[@i].ProductId" class="product-id" value="@item.ProductId" />
+                                        <input type="text" class="form-control product-input" value="@productName" required />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="StockOuts[@i].BranchId" class="branch-id" value="@item.BranchId" />
+                                        <input type="text" class="form-control branch-input" value="@branchName" required />
+                                    </td>
+                            
+                                    <td><input type="number" name="StockOuts[@i].Quantity" class="form-control qty" step="0.01" value="@item.Quantity" /><div class="qty-error"></div></td>
+                                    <td><input type="number" name="StockOuts[@i].Price" class="form-control price" step="0.01" value="@item.Price" /></td>
+                                    <td><input type="number" name="StockOuts[@i].TotalPrice" class="form-control total" value="@item.TotalPrice.ToString("F2")" readonly /></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mb-3 d-flex align-items-center">
+                <input type="number" id="row-count" class="form-control me-2" value="1" min="1" max="10" style="width: 100px;" />
+                <button type="button" class="btn btn-secondary" id="add-row">Add Row(s)</button>
+            </div>
+
+            <div class="text-end mb-3">
+                <strong>Grand Total: </strong>
+                <span id="grand-total">0.00</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script>
+        const productList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Products ?? new List<dynamic>()));
+        const branchList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Branches ?? new List<dynamic>()));
+
+        $(function () {
+            function bindAutocomplete(row) {
+                row.find(".product-input").autocomplete({
+                    source: productList.map(p => p.Name),
+                    minLength: 2,
+                    select: function (e, ui) {
+                        const name = ui.item.value;
+                        const product = productList.find(p => p.Name === name);
+                        row.find(".product-id").val(product?.Id || "");
+                    }
+                });
+
+                row.find(".branch-input").autocomplete({
+
+                    source: branchList.map(b => b.BranchName),
+                    minLength: 2,
+                    select: function (e, ui) {
+                        const name = ui.item.value;
+                        const branch = branchList.find(b => b.BranchName === name);
+                        row.find(".branch-id").val(branch?.Id || "");
+                    }
+                });
+            }
+
+            $("#DetailsTable tr").each(function () {
+                bindAutocomplete($(this));
+            });
+
+            $("#add-row").click(function () {
+                const count = parseInt($("#row-count").val()) || 1;
+                for (let i = 0; i < count; i++) {
+                    const index = $("#DetailsTable tr").length;
+                    const row = $(`
+                        <tr>
+                            <td><button type='button' class='btn btn-sm btn-danger remove-row'>&times;</button></td>
+                            <td>
+                                <input type='hidden' name='StockOuts[${index}].Id' value='0' />
+                                <input type='hidden' name='StockOuts[${index}].ProductId' class='product-id' />
+                                <input type='text' class='form-control product-input' required />
+                            </td>
+                            <td>
+                                <input type='hidden' name='StockOuts[${index}].BranchId' class='branch-id' />
+                                <input type='text' class='form-control branch-input' required />
+                            </td>
+                          
+                            <td><input type='number' name='StockOuts[${index}].Quantity' class='form-control qty' value='0' step='0.01' /><div class='qty-error'></div></td>
+                            <td><input type='number' name='StockOuts[${index}].Price' class='form-control price' value='0' step='0.01' /></td>
+                            <td><input type='number' name='StockOuts[${index}].TotalPrice' class='form-control total' value='0.00' readonly /></td>
+                        </tr>
+                    `);
+                    $("#DetailsTable").append(row);
+                    bindAutocomplete(row);
+                }
+            });
+
+            $("#DetailsTable").on("click", ".remove-row", function () {
+                $(this).closest("tr").remove();
+                updateGrandTotal();
+            });
+
+            $("#DetailsTable").on("input", ".qty, .price", function () {
+                const row = $(this).closest("tr");
+                const qty = parseFloat(row.find(".qty").val()) || 0;
+                const price = parseFloat(row.find(".price").val()) || 0;
+                row.find(".total").val((qty * price).toFixed(2));
+                updateGrandTotal();
+            });
+
+            function updateGrandTotal() {
+                let total = 0;
+                $(".total").each(function () {
+                    total += parseFloat($(this).val()) || 0;
+                });
+                $("#grand-total").text(total.toFixed(2));
+            }
+
+            window.disableSubmit = function (form) {
+                const btn = form.querySelector("button[type='submit']");
+                btn.disabled = true;
+                btn.innerText = "Submitting...";
+            };
+        });
+    </script>
+</body>
+</html>
